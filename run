@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+CONTROLLER=node01
+KUBECONFIG=${HOME}/picluster
+export KUBECONFIG
+
+get_kubeconfig()
+{
+  echo "Getting kubeconfig file from ${CONTROLLER} and writting to ${KUBECONFIG}"
+  echo "Set the ENV var KUBECONFIG=${KUBECONFIG} to use this"
+  ssh pi@${CONTROLLER} sudo cat /etc/rancher/k3s/k3s.yaml | sed -e s/127.0.0.1/${CONTROLLER}/g > ${KUBECONFIG}
+}
+
+get_nodes()
+{
+  get_kubeconfig
+  kubectl get nodes
+}
+
+help()
+{
+  echo "usage $0 get_nodes | get_kubeconfig"
+  exit 1
+}
+
+CMD=${1:-}
+shift || true
+case ${CMD} in
+    get_nodes) get_nodes ;;
+    get_kubeconfig) get_kubeconfig ;;
+    *) help ;;
+esac
