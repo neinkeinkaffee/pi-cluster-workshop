@@ -1,5 +1,5 @@
 terraform {
   backend "kubernetes" {
-    secret_suffix    = "state"
+    secret_suffix = "state"
   }
 }
