@@ -9,13 +9,8 @@ get_kubeconfig() {
   ssh pi@${CONTROLLER} sudo cat /etc/rancher/k3s/k3s.yaml | sed -e s/127.0.0.1/${CONTROLLER}/g >${KUBECONFIG}
 }
 
-get_nodes() {
-  get_kubeconfig
-  kubectl get nodes
-}
-
 help() {
-  echo "usage $0 get_nodes | get_kubeconfig"
+  echo "usage $0 get_kubeconfig | kubectl <options> | terraform <options> "
   exit 1
 }
 
@@ -25,12 +20,16 @@ _terraform() {
   terraform $@
   cd -
 }
+_kubectl() {
+  get_kubeconfig
+  kubectl $@
+}
 
 CMD=${1:-}
 shift || true
 case ${CMD} in
-get_nodes) get_nodes ;;
 get_kubeconfig) get_kubeconfig ;;
 terraform) _terraform $@ ;;
+kubectl) _kubectl $@ ;;
 *) help ;;
 esac
