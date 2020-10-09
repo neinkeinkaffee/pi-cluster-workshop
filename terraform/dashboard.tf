@@ -453,3 +453,34 @@ resource "kubernetes_cluster_role" "dashboard_viewonly" {
   }
 }
 
+
+data "kubernetes_secret" "dashboard-token" {
+  metadata {
+    namespace = kubernetes_namespace.kubernetes_dashboard.metadata[0].name
+    name = kubernetes_service_account.kubernetes_dashboard.default_secret_name
+  }
+}
+
+resource "kubernetes_ingress" "dashboard" {
+  metadata {
+    name = "dashboard-ingress"
+    namespace = kubernetes_namespace.kubernetes_dashboard.metadata[0].name
+    annotations = {
+      "ingress.kubernetes.io/custom-request-headers" = "Authorization: Bearer ${data.kubernetes_secret.dashboard-token.data.token}"
+    }
+  }
+  spec {
+    rule {
+      host = "dashboard.lan"
+      http {
+        path {
+          path = "/"
+          backend {
+            service_name = kubernetes_service.kubernetes_dashboard.metadata[0].name
+            service_port = kubernetes_service.kubernetes_dashboard.spec[0].port[0].port
+          }
+        }
+      }
+    }
+  }
+}

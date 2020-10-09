@@ -59,39 +59,3 @@ resource "kubernetes_service" "nginx" {
     type = "LoadBalancer"
   }
 }
-
-//spec:
-//tls:
-//- hosts:
-//- kube.mydomain.com
-//secretName: tls-secret
-//rules:
-//- host: kube.mydomain.com
-//http:
-//paths:
-//- path: /
-//backend:
-//serviceName: kubernetes-dashboard
-//servicePort: 443
-
-
-resource "kubernetes_ingress" "ingress" {
-  metadata {
-    name = "example-ingress"
-    namespace = kubernetes_namespace.kubernetes_dashboard.metadata[0].name
-  }
-
-  spec {
-    rule {
-      http {
-        path {
-          path = "/"
-          backend {
-            service_name = kubernetes_service.kubernetes_dashboard.metadata[0].name
-            service_port = kubernetes_service.kubernetes_dashboard.spec[0].port[0].port
-          }
-        }
-      }
-    }
-  }
-}
