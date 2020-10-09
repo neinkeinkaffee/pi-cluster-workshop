@@ -16,7 +16,7 @@ resource "kubernetes_deployment" "nginx" {
     }
   }
   spec {
-    replicas = 3
+    replicas = 1
     selector {
       match_labels = {
         app = "nginx"
@@ -57,5 +57,26 @@ resource "kubernetes_service" "nginx" {
     }
 
     type = "LoadBalancer"
+  }
+}
+
+resource "kubernetes_ingress" "nginx" {
+  metadata {
+    name = "dashboard-ingress"
+    namespace = kubernetes_namespace.cluster.metadata[0].name
+  }
+  spec {
+    rule {
+      host = "ingress.lan"
+      http {
+        path {
+          path = "/"
+          backend {
+            service_name = kubernetes_service.nginx.metadata[0].name
+            service_port = kubernetes_service.nginx.spec[0].port[0].port
+          }
+        }
+      }
+    }
   }
 }
