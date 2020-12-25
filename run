@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-CONTROLLER=node01
-KUBECONFIG=${HOME}/picluster
+CONTROLLER=pi0
+KUBECONFIG=${HOME}/pikubeconfig
 export KUBECONFIG
 
 get_kubeconfig() {
