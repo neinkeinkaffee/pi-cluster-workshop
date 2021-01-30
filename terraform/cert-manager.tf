@@ -16,3 +16,27 @@ resource "helm_release" "cert_manager" {
   }
 }
 
+resource "cluster_issuer" "letsencrypt-staging" {
+  metadata {
+    name = "letsencrypt-staging"
+  }
+
+  spec {
+      acme {
+        server = "https://acme-staging-v02.api.letsencrypt.org/directory"
+        email = "gesa.stupperich@gmail.com"
+        privateKeySecretRef {
+          name = "letsencrypt-staging"
+        }
+        solvers = {
+            http01 = {
+              ingress = {
+                class = "traefik"
+              }
+            }
+        }
+      }
+  }
+}
+
+
