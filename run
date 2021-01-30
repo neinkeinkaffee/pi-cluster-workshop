@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
-CONTROLLER=pi0
+CONTROLLER=10.0.2.10
 KUBECONFIG=${HOME}/pikubeconfig
+KUBE_CONFIG_PATH=$KUBECONFIG
 export KUBECONFIG
+export KUBE_CONFIG_PATH
 
 get_kubeconfig() {
   echo "Getting kubeconfig file from ${CONTROLLER} and writting to ${KUBECONFIG}"
@@ -15,13 +17,11 @@ help() {
 }
 
 _terraform() {
-  get_kubeconfig
   cd terraform
   terraform $@
   cd -
 }
 _kubectl() {
-  get_kubeconfig
   kubectl $@
 }
 
