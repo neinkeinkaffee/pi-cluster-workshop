@@ -14,28 +14,35 @@ resource "helm_release" "cert_manager" {
     name = "installCRDs"
     value = "true"
   }
-}
 
-resource "cluster_issuer" "letsencrypt-staging" {
-  metadata {
-    name = "letsencrypt-staging"
+  provisioner "local-exec" {
+    command = "sleep 1m"
   }
 
-  spec {
-      acme {
-        server = "https://acme-staging-v02.api.letsencrypt.org/directory"
-        email = "gesa.stupperich@gmail.com"
-        privateKeySecretRef {
-          name = "letsencrypt-staging"
-        }
-        solvers = {
-            http01 = {
-              ingress = {
-                class = "traefik"
-              }
-            }
-        }
-      }
+  provisioner "local-exec" {
+    command = <<EOT
+    cat <<EOF | kubectl create -f -
+apiVersion: cert-manager.io/v1alpha2
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-staging
+  namespace: cert-manager
+spec:
+  acme:
+    # The ACME server URL
+    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    # Email address used for ACME registration
+    email: ${var.email}
+    # Name of a secret used to store the ACME account private key
+    privateKeySecretRef:
+      name: letsencrypt-staging
+    # Enable the HTTP-01 challenge provider
+    solvers:
+    - http01:
+        ingress:
+          class: traefik
+EOF
+EOT
   }
 }
 
