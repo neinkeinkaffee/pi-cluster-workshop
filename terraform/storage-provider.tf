@@ -6,7 +6,12 @@ resource "helm_release" "nfs-client-provisioner" {
 
   set {
     name = "image.repository"
-    value = "quay.io/external_storage/nfs-client-provisioner-arm"
+    value = "groundhog2k/nfs-subdir-external-provisioner"
+  }
+
+  set {
+    name = "image.tag"
+    value = "v3.2.0"
   }
 
   set {
